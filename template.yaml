@@ -4,25 +4,42 @@ Transform:
   - AWS::Serverless-2016-10-31
 
 Resources:
+  API:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Auth:
+        Authorizers:
+          Default:
+            AuthorizerPayloadFormatVersion: 2
+            FunctionArn: JWTAuthorizer
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+
+  JWTAuthorizer:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: authentication
+      Handler: src/index.handler
+      Runtime: nodejs22.x
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Target: es2020
+        EntryPoints:
+          - src/index.ts
+
   helloFromLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: hello-world
       Handler: src/index.handler
       Runtime: nodejs22.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
-      Description: A Lambda function that returns a static string.
-      Policies:
-        - AWSLambdaBasicExecutionRole
       Events:
-        Api:
-          Type: Api
+        API:
+          Type: HttpApi
           Properties:
-            Auth:
-              ApiKeyRequired: true
+            ApiId: !Ref API
             Path: /
             Method: GET
     Metadata:
@@ -31,29 +48,29 @@ Resources:
         Target: es2020
         EntryPoints:
           - src/index.ts
+
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
       Name: !Sub ApplicationInsights-SAM-${AWS::StackName}
       ResourceQuery:
         Type: CLOUDFORMATION_STACK_1_0
+
   ApplicationInsightsMonitoring:
     Type: AWS::ApplicationInsights::Application
     Properties:
       ResourceGroupName: !Ref ApplicationResourceGroup
       AutoConfigurationEnabled: true
-  ApiKey:
-    Type: AWS::ApiGateway::ApiKey
+
 Outputs:
   WebEndpoint:
-    Description: hehe
-    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
-  ApiKey:
-    Value: !GetAtt ApiKey.APIKeyId
+    Value: !GetAtt API.ApiEndpoint
+
 Globals:
   Function:
     Tracing: Active
     LoggingConfig:
       LogFormat: JSON
+
   Api:
     TracingEnabled: true
