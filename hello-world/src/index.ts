@@ -11,22 +11,12 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
  */
 
 export const handler = async (
-	event: APIGatewayProxyEvent
+	_event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-	try {
-		return {
-			statusCode: 200,
-			body: JSON.stringify({
-				message: "hello world",
-			}),
-		};
-	} catch (error) {
-		console.log(error);
-		return {
-			statusCode: 500,
-			body: JSON.stringify({
-				message: "some error happened",
-			}),
-		};
-	}
+	return {
+		statusCode: 200,
+		body: JSON.stringify({
+			message: "Fuck you Tony",
+		}),
+	};
 };
