@@ -1,19 +1,20 @@
 {
-	"name": "sam-typescript-template",
+	"name": "notion-functions",
 	"version": "1.0.0",
 	"type": "module",
 	"private": true,
-	"description": "AWS SAM TypeScript template",
+	"description": "Provides enhanced functionality to Notion",
 	"scripts": {
 		"start": "npm run build && sam local invoke",
 		"build": "sam build",
-		"deploy": "sam deploy --guided",
+		"deploy": "sam deploy",
+		"deploy:guided": "sam deploy --guided",
 		"test": "c8 ava",
 		"prepare": "husky"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+ssh://git@github.com/SebSV-GitHub/SAM-TypeScript-template.git"
+		"url": "git+ssh://git@github.com/SebSV-GitHub/Notion-functions.git"
 	},
 	"keywords": [
 		"AWS",
@@ -24,9 +25,9 @@
 	"author": "Sebastián Suárez Valencia <contact@sebsv.com> (https://www.sebsv.com)",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/SebSV-GitHub/SAM-TypeScript-template/issues"
+		"url": "https://github.com/SebSV-GitHub/Notion-functions/issues"
 	},
-	"homepage": "https://github.com/SebSV-GitHub/SAM-TypeScript-template#readme",
+	"homepage": "https://github.com/SebSV-GitHub/Notion-functions#readme",
 	"engines": {
 		"node": ">=22"
 	},

@@ -1,9 +1,21 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: TypeScript template
+Description: Notion functions
 Transform:
   - AWS::Serverless-2016-10-31
 
+Parameters:
+  CertificateArnParameter:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: CertificateArnParameter
+
 Resources:
+  CustomDomain:
+    Type: AWS::ApiGatewayV2::DomainName
+    Properties:
+      DomainName: notion-functions.sebsv.dev
+      DomainNameConfigurations:
+        - CertificateArn: !Ref CertificateArnParameter
+
   API:
     Type: AWS::Serverless::HttpApi
     Properties:
@@ -15,6 +27,13 @@ Resources:
       CorsConfiguration:
         AllowOrigins:
           - "*"
+
+  ApiMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    Properties:
+      ApiId: !Ref API
+      DomainName: !Ref CustomDomain
+      Stage: !Ref APIApiGatewayDefaultStage
 
   JWTAuthorizer:
     Type: AWS::Serverless::Function
@@ -65,6 +84,8 @@ Resources:
 Outputs:
   WebEndpoint:
     Value: !GetAtt API.ApiEndpoint
+  Target:
+    Value: !GetAtt CustomDomain.RegionalDomainName
 
 Globals:
   Function:
