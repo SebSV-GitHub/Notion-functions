@@ -54,5 +54,9 @@
 		"nodeArguments": [
 			"--import=tsx"
 		]
-	}
+	},
+	"workspaces": [
+		"hello-world",
+		"authorization"
+	]
 }

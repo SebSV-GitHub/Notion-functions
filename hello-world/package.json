@@ -1,4 +1,7 @@
 {
-	"name": "function",
-	"version": "1.0.0"
+	"name": "hello-world",
+	"version": "1.0.0",
+	"dependencies": {
+		"uuid": "^11.1.0"
+	}
 }
