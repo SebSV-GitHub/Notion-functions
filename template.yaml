@@ -21,6 +21,8 @@ Resources:
         Api:
           Type: Api
           Properties:
+            Auth:
+              ApiKeyRequired: true
             Path: /
             Method: GET
     Metadata:
@@ -40,10 +42,14 @@ Resources:
     Properties:
       ResourceGroupName: !Ref ApplicationResourceGroup
       AutoConfigurationEnabled: true
+  ApiKey:
+    Type: AWS::ApiGateway::ApiKey
 Outputs:
   WebEndpoint:
     Description: hehe
     Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  ApiKey:
+    Value: !GetAtt ApiKey.APIKeyId
 Globals:
   Function:
     Tracing: Active
