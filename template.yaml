@@ -9,6 +9,17 @@ Parameters:
     Default: CertificateArnParameter
 
 Resources:
+  CloudflareOriginKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+
+  CloudflareOriginKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: "alias/cloudflare-origin-key"
+      TargetKeyId: !Ref CloudflareOriginKey
+
   CustomDomain:
     Type: AWS::ApiGatewayV2::DomainName
     Properties:
@@ -21,9 +32,12 @@ Resources:
     Properties:
       Auth:
         Authorizers:
-          Default:
-            AuthorizerPayloadFormatVersion: 2
-            FunctionArn: JWTAuthorizer
+          CloudflareAuthorizer:
+            AuthorizerPayloadFormatVersion: "2.0"
+            FunctionArn: !GetAtt CloudflareAuthorizerFunction.Arn
+            EnableFunctionDefaultPermissions: true
+            EnableSimpleResponses: true
+        DefaultAuthorizer: CloudflareAuthorizer
       CorsConfiguration:
         AllowOrigins:
           - "*"
@@ -35,12 +49,15 @@ Resources:
       DomainName: !Ref CustomDomain
       Stage: !Ref APIApiGatewayDefaultStage
 
-  JWTAuthorizer:
+  CloudflareAuthorizerFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: authentication
       Handler: src/index.handler
       Runtime: nodejs22.x
+      Policies:
+        - KMSDecryptPolicy:
+            KeyId: !Ref CloudflareOriginKey
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -61,6 +78,7 @@ Resources:
             ApiId: !Ref API
             Path: /
             Method: GET
+
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -82,10 +100,13 @@ Resources:
       AutoConfigurationEnabled: true
 
 Outputs:
-  WebEndpoint:
-    Value: !GetAtt API.ApiEndpoint
   Target:
+    Description: CNAME registry target value
     Value: !GetAtt CustomDomain.RegionalDomainName
+
+  APIEndpoint:
+    Description: Endpoint to directly call the lambda (Only for testing)
+    Value: !GetAtt API.ApiEndpoint
 
 Globals:
   Function:

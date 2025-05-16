@@ -7,7 +7,7 @@
 	"scripts": {
 		"start": "npm run build && sam local invoke",
 		"build": "sam build",
-		"deploy": "sam deploy",
+		"deploy": "sam build && sam deploy",
 		"deploy:guided": "sam deploy --guided",
 		"test": "c8 ava",
 		"prepare": "husky"
@@ -58,6 +58,6 @@
 	},
 	"workspaces": [
 		"hello-world",
-		"authorization"
+		"authentication"
 	]
 }
